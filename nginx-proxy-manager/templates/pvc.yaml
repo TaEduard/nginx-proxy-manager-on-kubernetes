@@ -2,23 +2,22 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "nginx-proxy-manager.fullname" . }}-data
-  namespace: {{ .Values.namespace | default "npm" }}
+  namespace: {{ .Values.namespace }}
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.storage.data.size | default "5Gi" }}
-
+      storage: {{ .Values.pvc.data.size }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "nginx-proxy-manager.fullname" . }}-letsencrypt
-  namespace: {{ .Values.namespace | default "npm" }}
+  namespace: {{ .Values.namespace }}
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.storage.letsencrypt.size | default "1Gi" }}
+      storage: {{ .Values.pvc.letsencrypt.size }}

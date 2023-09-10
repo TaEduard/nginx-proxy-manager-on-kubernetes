@@ -6,7 +6,7 @@ metadata:
     {{- include "nginx-proxy-manager.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount | default 1 }}
+  replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
@@ -31,8 +31,8 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository | default "jc21/nginx-proxy-manager" }}:{{ .Values.image.tag | default "latest" }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 80
@@ -43,11 +43,6 @@ spec:
             - name: admin-ui
               containerPort: 81
               protocol: TCP
-          volumeMounts:
-            - name: npm-data
-              mountPath: "/data"
-            - name: npm-letsencrypt
-              mountPath: "/etc/letsencrypt"
           livenessProbe:
             httpGet:
               path: /
@@ -58,13 +53,18 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: npm-data
+              mountPath: "/data"
+            - name: npm-letsencrypt
+              mountPath: "/etc/letsencrypt"
       volumes:
         - name: npm-data
           persistentVolumeClaim:
-            claimName: npm-data
+            claimName: {{ include "nginx-proxy-manager.fullname" . }}-data
         - name: npm-letsencrypt
           persistentVolumeClaim:
-            claimName: npm-letsencrypt
+            claimName: {{ include "nginx-proxy-manager.fullname" . }}-letsencrypt
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
