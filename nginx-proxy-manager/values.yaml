@@ -33,3 +33,15 @@ pvc:
     size: 5Gi
   letsencrypt:
     size: 1Gi
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+autoscaling:
+  enabled: false
+
+ingress:
+  enabled: false
+
